@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:pr_web/utils/theme_data.dart';
+import 'package:pr_web/widgets/bottom_bar.dart';
+import 'package:pr_web/widgets/carousel.dart';
+import 'package:pr_web/widgets/destination_heading.dart';
 import 'package:pr_web/widgets/explore_drawer.dart';
+import 'package:pr_web/widgets/featured_heading.dart';
+import 'package:pr_web/widgets/featured_tiles.dart';
+import 'package:pr_web/widgets/float_quick_access_bar.dart';
 import 'package:pr_web/widgets/responsive.dart';
 import 'package:pr_web/widgets/top_bar_contents.dart';
+import 'package:pr_web/widgets/web_scrollbar.dart';
 
 void main() {
   runApp(EasyDynamicThemeWidget(child: MyApp()));
@@ -40,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener());
+    _scrollController.addListener(_scrollListener);
     super.initState();
   }
 
@@ -83,15 +90,50 @@ class _HomePageState extends State<HomePage> {
               preferredSize: Size(screenSize.width, 1000),
               child: TopBarContents(0),
             ),
-      body: Container(
-        child: SizedBox(
-          height: screenSize.height * 0.45,
-          width: screenSize.width,
-          child: Image.asset(
-            'assets/images/cover.jpg',
-            fit: BoxFit.cover,
-          ),
-        ),
+      body: WebScrollbar(
+        color: Colors.blueGrey,
+        backgroundColor: Colors.blueGrey.withOpacity(0.3),
+        width: 10,
+        heightFraction: 0.3,
+        controller: _scrollController,
+        child: SingleChildScrollView(
+            controller: _scrollController,
+            physics: ClampingScrollPhysics(),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      child: SizedBox(
+                        height: screenSize.height * 0.45,
+                        width: screenSize.width,
+                        child: Image.asset(
+                          'assets/images/cover.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Column(children: [
+                      FloatingQuickAccessBar(screenSize: screenSize),
+                      Container(
+                        child: Column(
+                          children: [
+                            FeaturedHeading(
+                              screenSize: screenSize,
+                            ),
+                            FeaturedTiles(screenSize: screenSize)
+                          ],
+                        ),
+                      ),
+                    ])
+                  ],
+                ),
+                DestinationHeading(screenSize: screenSize),
+                DestinationCarousel(),
+                SizedBox(height: screenSize.height / 10),
+                BottomBar(),
+              ],
+            )),
       ),
       drawer: ExploreDrawer(),
     );
